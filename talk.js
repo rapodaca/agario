@@ -6,9 +6,9 @@ ws.on('open', function() {
   console.log('onopen');
 
   ws.onmessage = function (message) {
-    console.log(message.data)
+    // console.log(message.data)
 
-    // $a(new DataView(toArrayBuffer(message.data)));
+    processMessage(new DataView(toArrayBuffer(message.data)));
   }
 
   function P(a) {
@@ -33,6 +33,42 @@ ws.on('open', function() {
 
   ws.send(a);
 });
+
+var processMessage = function (message) {
+  // console.log(message.toString());
+  // console.log(message.getUint8(0));
+
+  function b() {
+    for (var b = "";;) {
+      var d = message.getUint16(c, !0);
+      c += 2;
+      if (0 == d) break;
+      b += String.fromCharCode(d)
+    }
+
+    return b
+  }
+
+  var c = 0;
+  240 == message.getUint8(c) && (c += 5);
+
+  switch (message.getUint8(c++)) {
+    case 49:
+      console.log('leaderboard');
+      var d = message.getUint32(c, !0);
+      c = c + 4;
+      var B = [ ];
+
+      for (var e = 0; e < d; ++e) {
+        var m = message.getUint32(c, !0);
+        c = c + 4;
+        console.log({
+          id: m,
+          name: b()
+        });
+      }
+  }
+};
 
 function toArrayBuffer(buffer) {
   var ab = new ArrayBuffer(buffer.length);
